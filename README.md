@@ -120,7 +120,7 @@ La base `hotel_db.sqlite` contient les tables suivantes :
 
 ## 👨‍💻 Auteurs
 
-* Étudiant : \[Votre nom ici]
-* Université : \[Nom de votre université]
+* Étudiant : \[MOHAMED LAKHDAR\]
+* Université : \[FSSM   _  UCA ]
 * Cours : Projet de Base de Données
 
