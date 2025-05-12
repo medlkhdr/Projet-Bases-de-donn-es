@@ -113,7 +113,7 @@ La base `hotel_db.sqlite` contient les tables suivantes :
 
 ## 📬 Remarques
 
-* En cas de modification du schéma de base de données, il faudra supprimer le fichier `hotel_db.sqlite` et relancer les scripts `creation.sql` puis `insertion.sqlite`.
+* En cas de modification du schéma de base de données, il faudra supprimer le fichier `hotel_db.sqlite` et relancer les scripts `creation.sql` puis `insertion.sql`.
 * Le projet a été développé dans le cadre du TP2 de base de données.
 
 ---
