@@ -1,0 +1,11 @@
+hotel_db.sqlite
+
+myenv/
+
+*.pyc
+*.pyo
+__pycache__/
+
+*.log
+README.md
+
