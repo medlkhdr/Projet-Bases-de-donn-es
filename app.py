@@ -1,60 +1,94 @@
+# app.py (version améliorée en français avec plus de fonctionnalités)
+
 import streamlit as st
-from database import get_clients, get_reservations, get_available_rooms, add_client, add_reservation
+from database import (
+    obtenir_clients,
+    obtenir_reservations,
+    obtenir_chambres_disponibles,
+    ajouter_client,
+    ajouter_reservation,
+    obtenir_villes_hotels,
+    obtenir_types_chambres
+)
 
-st.title('Hotel Reservation System')
+st.set_page_config(page_title="Système de Réservation d'Hôtel", layout="wide")
+st.title("Système de Réservation d'Hôtel 🏨")
 
-st.header('Clients List')
-clients = get_clients()
+# Section Clients
+st.header("👤 Liste des Clients")
+clients = obtenir_clients()
 if clients:
-    for client in clients:
-        st.write(f"ID: {client[0]}, Name: {client[1]}, Email: {client[4]}")
+    st.table([{"ID": c[0], "Nom complet": c[6], "Email": c[4], "Téléphone": c[5]} for c in clients])
 else:
-    st.write("No clients found.")
+    st.info("Aucun client trouvé.")
 
-st.header('Reservations List')
-reservations = get_reservations()
+# Section Réservations
+st.header("📅 Réservations")
+reservations = obtenir_reservations()
 if reservations:
-    for reservation in reservations:
-        st.write(f"Reservation ID: {reservation[0]}, Client: {reservation[1]}, Hotel: {reservation[2]}")
+    st.table([
+        {
+            "ID": r[0], "Client": r[1], "Email": r[2],
+            "Arrivée": r[3], "Départ": r[4],
+            "Ville": r[5], "Pays": r[6]
+        } for r in reservations
+    ])
 else:
-    st.write("No reservations found.")
+    st.info("Aucune réservation trouvée.")
 
-st.header('Available Rooms')
-start_date = st.date_input("Start Date")
-end_date = st.date_input("End Date")
+# Section Chambres disponibles
+st.header("🚪 Chambres Disponibles")
+col1, col2 = st.columns(2)
+with col1:
+    date_debut = st.date_input("Date d'arrivée")
+with col2:
+    date_fin = st.date_input("Date de départ")
 
-if start_date and end_date:
-    available_rooms = get_available_rooms(str(start_date), str(end_date))
-    if available_rooms:
-        for room in available_rooms:
-            st.write(f"Room ID: {room[0]}, Floor: {room[2]}, Smoking: {room[3]}")
+if date_debut and date_fin:
+    chambres = obtenir_chambres_disponibles(str(date_debut), str(date_fin))
+    if chambres:
+        st.subheader("Chambres libres")
+        st.table([
+            {
+                "ID": ch[0], "Numéro": ch[1], "Étage": ch[2], "Fumeurs": "Oui" if ch[3] else "Non",
+                "Ville": ch[4], "Type": ch[5], "Tarif": f"{ch[6]:.2f} €"
+            } for ch in chambres
+        ])
     else:
-        st.write("No available rooms found for the selected dates.")
+        st.warning("Aucune chambre disponible pour ces dates.")
 
-st.header('Add a New Client')
-with st.form(key='add_client_form'):
-    nom = st.text_input('Full Name')
-    adresse = st.text_input('Address')
-    ville = st.text_input('City')
-    code_postal = st.text_input('Postal Code')
-    email = st.text_input('Email')
-    telephone = st.text_input('Telephone')
+# Formulaire pour ajouter un client
+st.header("➕ Ajouter un nouveau client")
+with st.form(key="form_client"):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        nom = st.text_input("Nom complet")
+        email = st.text_input("Email")
+    with col2:
+        adresse = st.text_input("Adresse")
+        ville = st.text_input("Ville")
+    with col3:
+        code_postal = st.text_input("Code Postal")
+        telephone = st.text_input("Téléphone")
+    submit_client = st.form_submit_button("Ajouter le client")
+    if submit_client:
+        if nom and email:
+            ajouter_client(nom, adresse, ville, code_postal, email, telephone)
+            st.success("Client ajouté avec succès !")
+        else:
+            st.error("Veuillez remplir au minimum le nom et l'email.")
 
-    submit_button = st.form_submit_button(label='Add Client')
+# Formulaire pour ajouter une réservation
+st.header("📝 Ajouter une réservation")
+with st.form(key="form_reservation"):
+    id_client = st.number_input("ID du client", min_value=1, step=1)
+    date_arrivee = st.date_input("Date d'arrivée")
+    date_depart = st.date_input("Date de départ")
+    types = obtenir_types_chambres()
+    type_options = {f"{t[1]} - {t[2]:.2f} €": t[0] for t in types}
+    type_selection = st.selectbox("Type de chambre", list(type_options.keys()))
 
-    if submit_button:
-        add_client(nom, adresse, ville, code_postal, email, telephone)
-        st.success('Client added successfully!')
-
-st.header('Add a New Reservation')
-with st.form(key='add_reservation_form'):
-    client_id = st.number_input('Client ID', min_value=1)
-    date_arrivee = st.date_input('Arrival Date')
-    date_depart = st.date_input('Departure Date')
-
-    submit_button = st.form_submit_button(label='Add Reservation')
-
-    if submit_button:
-        add_reservation(client_id, str(date_arrivee), str(date_depart))
-        st.success('Reservation added successfully!')
-
+    submit_resa = st.form_submit_button("Ajouter la réservation")
+    if submit_resa:
+        ajouter_reservation(id_client, str(date_arrivee), str(date_depart), type_options[type_selection])
+        st.success("Réservation ajoutée avec succès !")
