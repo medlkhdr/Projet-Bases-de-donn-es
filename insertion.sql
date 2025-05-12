@@ -1,4 +1,3 @@
-USE hotel_db;
 
 -- Hôtels
 INSERT INTO Hotel VALUES

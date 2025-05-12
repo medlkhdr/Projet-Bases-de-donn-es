@@ -24,7 +24,7 @@ FROM Type_Chambre T
 LEFT JOIN Chambre Ch ON T.id_Type = Ch.id_Type
 GROUP BY T.id_Type;
 
--- e. Chambres non réservées entre deux dates (exemple entre 2025-06-10 et 2025-06-20)
+-- e. Chambres non réservées entre deux dates
 SELECT Ch.*
 FROM Chambre Ch
 WHERE Ch.id_Chambre NOT IN (
