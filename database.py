@@ -1,10 +1,8 @@
 import sqlite3
 
-# Database connection function
 def connect_db():
     return sqlite3.connect('hotel_db.sqlite')
 
-# Function to retrieve all clients
 def get_clients():
     query = "SELECT * FROM Client"
     try:
@@ -19,7 +17,6 @@ def get_clients():
     finally:
         conn.close()
 
-# Function to retrieve all reservations
 def get_reservations():
     query = """
     SELECT R.id_Reservation, C.Nom_complet, H.Ville
@@ -42,7 +39,6 @@ def get_reservations():
     finally:
         conn.close()
 
-# Function to retrieve available rooms based on dates
 def get_available_rooms(start_date, end_date):
     query = """
     SELECT Ch.*
@@ -68,7 +64,6 @@ def get_available_rooms(start_date, end_date):
     finally:
         conn.close()
 
-# Function to add a client
 def add_client(nom, adresse, ville, code_postal, email, telephone):
     query = """
     INSERT INTO Client (Nom_complet, Adresse, Ville, Code_postal, Email, Telephone)
@@ -84,7 +79,6 @@ def add_client(nom, adresse, ville, code_postal, email, telephone):
     finally:
         conn.close()
 
-# Function to add a reservation
 def add_reservation(id_client, date_arrivee, date_depart):
     query = """
     INSERT INTO Reservation (id_Client, Date_arrivee, Date_depart)

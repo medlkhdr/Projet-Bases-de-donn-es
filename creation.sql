@@ -1,4 +1,3 @@
--- Drop tables if they exist
 DROP TABLE IF EXISTS Concerner;
 DROP TABLE IF EXISTS Offre;
 DROP TABLE IF EXISTS Evaluation;
@@ -9,7 +8,6 @@ DROP TABLE IF EXISTS Prestation;
 DROP TABLE IF EXISTS Client;
 DROP TABLE IF EXISTS Hotel;
 
--- Create tables
 CREATE TABLE Hotel (
   id_Hotel INTEGER PRIMARY KEY,
   Ville TEXT NOT NULL,
@@ -82,7 +80,4 @@ CREATE TABLE Concerner (
   FOREIGN KEY (id_Reservation) REFERENCES Reservation(id_Reservation),
   FOREIGN KEY (id_Type) REFERENCES Type_Chambre(id_Type)
 );
-
--- Data Insertion
--- (copy your existing INSERT INTO statements directly below this)
 

@@ -1,10 +1,8 @@
 import streamlit as st
 from database import get_clients, get_reservations, get_available_rooms, add_client, add_reservation
 
-# Streamlit Page Title
 st.title('Hotel Reservation System')
 
-# Section for Viewing Clients
 st.header('Clients List')
 clients = get_clients()
 if clients:
@@ -13,7 +11,6 @@ if clients:
 else:
     st.write("No clients found.")
 
-# Section for Viewing Reservations
 st.header('Reservations List')
 reservations = get_reservations()
 if reservations:
@@ -22,7 +19,6 @@ if reservations:
 else:
     st.write("No reservations found.")
 
-# Section for Viewing Available Rooms
 st.header('Available Rooms')
 start_date = st.date_input("Start Date")
 end_date = st.date_input("End Date")
@@ -35,7 +31,6 @@ if start_date and end_date:
     else:
         st.write("No available rooms found for the selected dates.")
 
-# Section for Adding a New Client
 st.header('Add a New Client')
 with st.form(key='add_client_form'):
     nom = st.text_input('Full Name')
@@ -51,7 +46,6 @@ with st.form(key='add_client_form'):
         add_client(nom, adresse, ville, code_postal, email, telephone)
         st.success('Client added successfully!')
 
-# Section for Adding a New Reservation
 st.header('Add a New Reservation')
 with st.form(key='add_reservation_form'):
     client_id = st.number_input('Client ID', min_value=1)
