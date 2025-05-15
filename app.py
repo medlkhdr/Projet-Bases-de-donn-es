@@ -1,4 +1,3 @@
-# app.py (version améliorée en français avec plus de fonctionnalités)
 
 import streamlit as st
 from database import (
