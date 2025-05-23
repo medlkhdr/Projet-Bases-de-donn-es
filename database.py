@@ -1,26 +1,18 @@
-# database.py amélioré avec fonctionnalités supplémentaires
+# database.py
 import sqlite3
 
-# Connexion à la base de données
+DB_NAME = "hotel_db.sqlite"
 
 def connexion_db():
-    return sqlite3.connect("hotel_db.sqlite")
-
-# Obtenir la liste des clients
+    return sqlite3.connect(DB_NAME)
 
 def obtenir_clients():
     try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Client")
-        return cursor.fetchall()
+        with connexion_db() as conn:
+            return conn.execute("SELECT * FROM Client").fetchall()
     except sqlite3.Error as e:
         print(f"Erreur SQLite: {e}")
         return []
-    finally:
-        conn.close()
-
-# Obtenir les réservations avec détails du client et de l'hôtel
 
 def obtenir_reservations():
     query = """
@@ -33,17 +25,11 @@ def obtenir_reservations():
     JOIN Hotel H ON Ch.id_Hotel = H.id_Hotel;
     """
     try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        cursor.execute(query)
-        return cursor.fetchall()
+        with connexion_db() as conn:
+            return conn.execute(query).fetchall()
     except sqlite3.Error as e:
         print(f"Erreur SQLite: {e}")
         return []
-    finally:
-        conn.close()
-
-# Obtenir les chambres disponibles entre deux dates
 
 def obtenir_chambres_disponibles(date_debut, date_fin):
     query = """
@@ -61,17 +47,11 @@ def obtenir_chambres_disponibles(date_debut, date_fin):
     );
     """
     try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        cursor.execute(query, (date_debut, date_fin))
-        return cursor.fetchall()
+        with connexion_db() as conn:
+            return conn.execute(query, (date_debut, date_fin)).fetchall()
     except sqlite3.Error as e:
         print(f"Erreur SQLite: {e}")
         return []
-    finally:
-        conn.close()
-
-# Ajouter un nouveau client
 
 def ajouter_client(nom, adresse, ville, code_postal, email, telephone):
     query = """
@@ -79,67 +59,35 @@ def ajouter_client(nom, adresse, ville, code_postal, email, telephone):
     VALUES (?, ?, ?, ?, ?, ?)
     """
     try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        cursor.execute(query, (nom, adresse, ville, code_postal, email, telephone))
-        conn.commit()
+        with connexion_db() as conn:
+            conn.execute(query, (nom, adresse, ville, code_postal, email, telephone))
+            conn.commit()
     except sqlite3.Error as e:
         print(f"Erreur SQLite: {e}")
-    finally:
-        conn.close()
-
-# Ajouter une réservation avec une chambre (fonctionnalité étendue)
 
 def ajouter_reservation(id_client, date_arrivee, date_depart, id_type):
     try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        # Insérer la réservation
-        cursor.execute("""
-            INSERT INTO Reservation (id_Client, Date_arrivee, Date_depart)
-            VALUES (?, ?, ?)
-        """, (id_client, date_arrivee, date_depart))
-        reservation_id = cursor.lastrowid
+        with connexion_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO Reservation (id_Client, Date_arrivee, Date_depart)
+                VALUES (?, ?, ?)
+            """, (id_client, date_arrivee, date_depart))
+            reservation_id = cursor.lastrowid
 
-        # Ajouter dans la table Concerner
-        cursor.execute("""
-            INSERT INTO Concerner (id_Reservation, id_Type)
-            VALUES (?, ?)
-        """, (reservation_id, id_type))
-
-        conn.commit()
+            cursor.execute("""
+                INSERT INTO Concerner (id_Reservation, id_Type)
+                VALUES (?, ?)
+            """, (reservation_id, id_type))
+            conn.commit()
     except sqlite3.Error as e:
         print(f"Erreur SQLite: {e}")
-    finally:
-        conn.close()
-
-# Obtenir la liste des villes d'hôtels pour filtrage (fonctionnalité UI)
-
-def obtenir_villes_hotels():
-    query = "SELECT DISTINCT Ville FROM Hotel"
-    try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        cursor.execute(query)
-        return [row[0] for row in cursor.fetchall()]
-    except sqlite3.Error as e:
-        print(f"Erreur SQLite: {e}")
-        return []
-    finally:
-        conn.close()
-
-# Obtenir les types de chambres pour le formulaire de réservation
 
 def obtenir_types_chambres():
-    query = "SELECT id_Type, Type, Tarif FROM Type_Chambre"
     try:
-        conn = connexion_db()
-        cursor = conn.cursor()
-        cursor.execute(query)
-        return cursor.fetchall()
+        with connexion_db() as conn:
+            return conn.execute("SELECT id_Type, Type, Tarif FROM Type_Chambre").fetchall()
     except sqlite3.Error as e:
         print(f"Erreur SQLite: {e}")
         return []
-    finally:
-        conn.close()
 
